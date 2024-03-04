@@ -11,17 +11,11 @@ import java.util.List;
 
 @Repository
 public interface AbsenceRepository extends JpaRepository<Absence, Long> {
-    List<Absence> findByAbsenceEtudiant(Utilisateur etudiant);
+    List<Absence> findByAbsenceEtudiantUtilisateurid(Long utilisateurid);
+    ;
 
 
 
-
-
-//    @Query("SELECT a FROM Absence a WHERE a.student.id = :studentId")
-//    List<Absence> findByStudentId(@Param("studentId") Long studentId);
-//
-//    @Query("SELECT a FROM Absence a WHERE a.student.id IN (:studentIds)")
-//    List<Absence> findByStudentIds(@Param("studentIds") List<Long> studentIds);
 }
 
 

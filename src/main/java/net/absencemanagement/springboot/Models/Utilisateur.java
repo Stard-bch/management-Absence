@@ -1,46 +1,76 @@
 package net.absencemanagement.springboot.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Data
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "utilisateur_type")
+@RequiredArgsConstructor
+@ToString
+@Table(	name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "username"),
+                @UniqueConstraint(columnNames = "email")
+        })
 public class Utilisateur implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long utilisateur_id;
+    private Long utilisateurid;
+    @NotBlank
     @NonNull
-    @Column(name = "nom")
-    private String nom;
-
-    @NonNull
-    @Column(name = "prenom")
-    private String prenom;
-
+    @Size(max = 20)
+    private String username;
     @NonNull
     @Email
-    @Column(name = "email")
     private String email;
 
-    @Column(name = "password")
+    @NotBlank
+    @NonNull
+    @Size(max = 120)
     private String password;
 
-    // Getters and setters for password
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(	name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
-    public void setPassword(String password) {
+    public Utilisateur(@NonNull String username, @NonNull String email, @NonNull String password,  Set<Role> roles) {
+        this.username = username;
+        this.email = email;
         this.password = password;
+        this.roles = roles;
+    }
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Utilisateur user = (Utilisateur) o;
+        return username.equals(user.username) && email.equals(user.email);
     }
 
-    public boolean checkPassword(String password) {
-        return this.password.equals(password);
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, email);
     }
+    public Long getUtilisateurid() {
+        return utilisateurid;
+    }
+
 }

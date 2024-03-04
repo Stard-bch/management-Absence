@@ -10,21 +10,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@CrossOrigin("http://localhost:4200")
+
 @RestController
 @RequestMapping("/api/etudiant")
 public class EtudiantController {
 
+    @Autowired
+
     private EtudiantService etudiantService;
 
-    @Autowired
-    public EtudiantController(EtudiantService etudiantService) {
-        this.etudiantService = etudiantService;
+
+    @GetMapping("/get-absences/{studentId}")
+    public ResponseEntity<?> absencesByStudentId(@PathVariable Long utilisateurid) {
+        return etudiantService.getAbsencesByStudentId(utilisateurid);
     }
 
-    @GetMapping("/absences/{id}")
-    public ResponseEntity<List<Absence>> getAbsencesByEtudiantId(@PathVariable Long id) {
-        List<Absence> absences = etudiantService.getAbsencesByEtudiantId(id);
-        return new ResponseEntity<>(absences, HttpStatus.OK);
-    }
 }
